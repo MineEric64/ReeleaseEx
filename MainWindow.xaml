@@ -15,7 +15,25 @@
                 </LinearGradientBrush>
             </Label.Foreground>
         </Label>
-        <ComboBox HorizontalAlignment="Left" Margin="41,47,0,0" VerticalAlignment="Top" Width="151"/>
+        <ComboBox x:Name="Items" HorizontalAlignment="Left" Margin="41,13,0,0" VerticalAlignment="Top" Width="251" SelectionChanged="Items_SelectionChanged"/>
+        <TextBox x:Name="DirPath" HorizontalAlignment="Left" Margin="138,50,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="393"/>
+        <Label Content="Directory Path:" HorizontalAlignment="Left" Margin="41,46,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.453,0.505"/>
+        <Label Content="Added:" HorizontalAlignment="Left" Margin="41,81,0,0" VerticalAlignment="Top"/>
+        <Button x:Name="FileAdd" Content="Add File" HorizontalAlignment="Left" Margin="554,81,0,0" VerticalAlignment="Top" Height="56" Width="142" Click="FileAdd_Click"/>
+        <Button x:Name="FileRemove" Content="Remove File" HorizontalAlignment="Left" Margin="554,159,0,0" VerticalAlignment="Top" Height="56" Width="142" Click="FileRemove_Click"/>
+        <ListBox x:Name="AddedList" Margin="138,81,269,219"/>
+        <Button x:Name="DirPathOK" Content="..." HorizontalAlignment="Left" Margin="554,50,0,0" VerticalAlignment="Top" Height="16" Width="26" Click="DirPathOK_Click"/>
+        <TextBox x:Name="ZipName" HorizontalAlignment="Left" Margin="138,240,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="393"/>
+        <Label Content="Zip Name:" HorizontalAlignment="Left" Margin="41,236,0,0" VerticalAlignment="Top"/>
+        <TextBox x:Name="ZipNameParam" HorizontalAlignment="Left" Margin="138,276,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="393" Text="param1;param2"/>
+        <Label Content="Params:" HorizontalAlignment="Left" Margin="41,272,0,0" VerticalAlignment="Top"/>
+        <Button x:Name="ReeleaseClick" Content="Reelease!" HorizontalAlignment="Left" Margin="41,342,0,0" VerticalAlignment="Top" Width="568" Height="59" FontSize="20" Click="Reelease_Click"/>
+        <TextBox x:Name="SavedDir" HorizontalAlignment="Left" Margin="152,305,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="379"/>
+        <Label Content="Saved Directory:" HorizontalAlignment="Left" Margin="41,301,0,0" VerticalAlignment="Top"/>
+        <Button x:Name="SavedDirOK" Content="..." HorizontalAlignment="Left" Margin="554,305,0,0" VerticalAlignment="Top" Height="16" Width="26" Click="SavedDirOK_Click"/>
+        <Button x:Name="SavedDirOpen" Content="Open Folder" HorizontalAlignment="Left" Margin="596,305,0,0" VerticalAlignment="Top" Height="16" Width="100" Click="SavedDirOpen_Click"/>
+        <Button x:Name="ItemAdd" Content="Add" HorizontalAlignment="Left" Margin="314,13,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.117,-0.431" Height="20" Width="65" Click="ItemAdd_Click"/>
+        <Button x:Name="ItemRemove" Content="Remove" HorizontalAlignment="Left" Margin="400,13,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.117,-0.431" Height="20" Width="65" Click="ItemRemove_Click"/>
 
     </Grid>
 </Window>
