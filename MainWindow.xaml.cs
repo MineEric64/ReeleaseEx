@@ -49,9 +49,9 @@ namespace ReeleaseEx
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            if (File.Exists(Options.Path))
+            if (File.Exists(Options.FilePath))
             {
-                Options.Load(Options.Path);
+                Options.Load();
 
                 LoadOption();
                 AddToolsToControl();
