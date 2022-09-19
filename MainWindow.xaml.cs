@@ -258,5 +258,10 @@ namespace ReeleaseEx
                 Items.Items.Add(tool.Name);
             }
         }
+
+        private void ConnectIp_Click(object sender, RoutedEventArgs e)
+        {
+            
+        }
     }
 }
