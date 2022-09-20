@@ -1,9 +1,11 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -15,14 +17,17 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-using syntaxERROR.OPtion;
-
 using Ionic.Zip;
 using Ookii.Dialogs.Wpf;
+
+using syntaxERROR.OPtion;
+
+using ReeleaseEx.BetterReelease;
 
 using Path = System.IO.Path;
 
@@ -33,18 +38,21 @@ namespace ReeleaseEx
     /// </summary>
     public partial class MainWindow : Window
     {
-        public static Version AppVersion => Assembly.GetExecutingAssembly().GetName().Version;
-
         public static OPtion<JArray> Options { get; set; } = new OPtion<JArray>(Path.Combine(AppContext.BaseDirectory, "settings.json"));
 
         public static List<ToolConfig> Tools { get; set; } = new List<ToolConfig>();
         public static ToolConfig SelectedTool { get; private set; }
+
+        public static ClientOne Client { get; private set; } = new ClientOne();
 
         public MainWindow()
         {
             InitializeComponent();
 
             this.Loaded += MainWindow_Loaded;
+            this.Closing += MainWindow_Closing;
+
+            AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
         }
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
@@ -61,7 +69,33 @@ namespace ReeleaseEx
                 Options.Data = new JArray();
             }
 
-            this.Title = $"Reelease! v{AppVersion}";
+            Client.SyncWhenPeerConnected = new Action(() =>
+            {
+                Dispatcher.Invoke(new Action(() =>
+                {
+                    ConnectIp.Content = "Disconnect";
+                }));
+            });
+            Client.BetterReeleasedWhenWorker = new Action<string>((dirPath) =>
+            {
+                Dispatcher.Invoke(new Action(() =>
+                {
+                    SavedDir.Text = dirPath;
+                }));
+            });
+            Client.Start();
+            ConnectIp.Content = $"Connect ({Client.PORT_NUMBER})";
+        }
+
+        private void MainWindow_Closing(object sender, CancelEventArgs e)
+        {
+            Client.Stop();
+        }
+
+        private void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            var ex = (Exception)e.ExceptionObject;
+            MessageBox.Show(string.Concat("Error occured!", Environment.NewLine, Environment.NewLine, ex.ToString()), "ReeleaseEx", MessageBoxButton.OK, MessageBoxImage.Error);
         }
 
         private void ItemAdd_Click(object sender, RoutedEventArgs e)
@@ -182,13 +216,20 @@ namespace ReeleaseEx
             Process.Start("explorer.exe", SavedDir.Text);
         }
 
-        private void Reelease_Click(object sender, RoutedEventArgs e)
+        private async void Reelease_Click(object sender, RoutedEventArgs e)
         {
+            string path;
+
             SelectedTool.ZipName = ZipName.Text;
             SelectedTool.ZipNameParams = ZipNameParam.Text;
 
             SaveOption();
-            Reelease();
+            path = Reelease();
+            if (Client.IsConnected)
+            {
+                MessageBox.Show("HMM");
+                await BetterReeleaseAsync(path);
+            }
 
             MessageBox.Show("Reeleased!", this.Title, MessageBoxButton.OK, MessageBoxImage.Information);
         }
@@ -214,7 +255,7 @@ namespace ReeleaseEx
             Options.Save();
         }
         
-        public void Reelease()
+        public string Reelease()
         {
             string[] param = SelectedTool.ZipNameParams.Split(';');
             string name = string.Format(SelectedTool.ZipName, param);
@@ -234,6 +275,14 @@ namespace ReeleaseEx
 
                 zip.Save($"{path}.zip");
             }
+
+            return $"{path}.zip";
+        }
+
+        public async Task BetterReeleaseAsync(string path)
+        {
+            await Client.SendAsync(path);
+            File.Delete(path);
         }
 
         public void LoadToControl()
@@ -259,9 +308,21 @@ namespace ReeleaseEx
             }
         }
 
-        private void ConnectIp_Click(object sender, RoutedEventArgs e)
+        private async void ConnectIp_Click(object sender, RoutedEventArgs e)
         {
-            
+            if (!Client.IsConnected)
+            {
+                string[] raw = IpPath.Text.Split(':');
+
+                if (!Client.IsStarted) Client.Start();
+                await Client.ConnectAsync(raw[0], int.Parse(raw[1]));
+                ConnectIp.Content = "Disconnect";
+            }
+            else
+            {
+                Client.Stop();
+                ConnectIp.Content = $"Connect ({Client.PORT_NUMBER})";
+            }
         }
     }
 }

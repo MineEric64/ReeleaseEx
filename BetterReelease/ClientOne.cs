@@ -15,39 +15,71 @@ using Open.P2P.Streams.Readers;
 
 using Path = System.IO.Path;
 using MessagePack;
+using Ionic.Zip;
+using System.Windows;
+using System.Windows.Threading;
 
 namespace ReeleaseEx.BetterReelease
 {
     /// <summary>
     /// ClientOne.cs의 소스 코드 중 일부는 https://github.com/MineEric64/BetterLiveScreen 프로젝트의 ClientOne.cs 소스 코드 일부를 사용하였습니다.
     /// </summary>
-    internal class ClientOne
+    public class ClientOne
     {
-        public const int PORT_NUMBER = 9988;
+        private int _port = 9988;
+        public int PORT_NUMBER => _port;
+
+        public bool IsStarted { get; private set; } = false;
+        public bool IsConnected { get; private set; } = false;
 
         private TcpListener _listener;
         private CommunicationManager _comManager;
 
         private List<IPEndPoint> _IPEPs = new List<IPEndPoint>();
 
+        public Action SyncWhenPeerConnected { get; set; }
+        public Action<string> BetterReeleasedWhenWorker { get; set; }
+
         public ClientOne()
         {
+            Random rand = new Random();
+            _port = rand.Next(9000, 10000);
+
             _listener = new TcpListener(PORT_NUMBER);
             _comManager = new CommunicationManager(_listener);
-            
-            _listener.Start();
+            _comManager.PeerConnected += _comManager_PeerConnected;
+            _comManager.ConnectionClosed += _comManager_ConnectionClosed;
         }
 
-        public async Task ConnectAsync(string ip)
+        public async Task ConnectAsync(string ip, int port)
         {
             IPAddress address;
             if (!IPAddress.TryParse(ip, out address)) address = (await Dns.GetHostAddressesAsync(ip))[0];
 
-            var IPEP = new IPEndPoint(address, PORT_NUMBER);
+            var IPEP = new IPEndPoint(address, port);
 
             _IPEPs.Add(IPEP);
-            _comManager.PeerConnected += _comManager_PeerConnected;
+
             await _comManager.ConnectAsync(IPEP);
+            IsConnected = true;
+
+            MessageBox.Show("Connected!", "ReeleaseEx", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+
+        public void Start()
+        {
+            _listener.Start();
+            IsStarted = true;
+        }
+
+        public void Stop()
+        {
+            if (!IsConnected) return;
+
+            IsConnected = false;
+            IsStarted = false;
+
+            _listener.Stop();
         }
 
         private async void _comManager_PeerConnected(object sender, PeerEventArgs e)
@@ -60,26 +92,44 @@ namespace ReeleaseEx.BetterReelease
             string fileName = string.Empty;
             byte[] fileData = new byte[0];
 
-            while (true)
+            IsConnected = true;
+            SyncWhenPeerConnected();
+
+            while (IsConnected) //Background Worker
             {
-                buffer = await sr.ReadBytesAsync();
+                buffer = await sr.ReadBytesAsync(); //수신 입장에서 받지를 못함. 나중에 고쳐야할 듯 지금은 시간이 너무 늦기도 했고 멘탈 나감 ㅅㄱ
+                MessageBox.Show("OKYA"); //이 메시지가 송수신 둘다 보이지 않음
                 info = MessagePackSerializer.Deserialize<ReceiveInfo>(buffer);
 
                 if (info.Step == 1) //File Name
                 {
                     fileName = Encoding.UTF8.GetString(info.Buffer);
+                    MessageBox.Show(fileName);
                 }
-                else if (info.Step == 2) // File Data
+                else if (info.Step == 2) //File Data
                 {
                     fileData = info.Buffer;
+                    string filePath = Path.Combine(Path.GetTempPath(), fileName);
+                    string dirPath = Path.Combine(AppContext.BaseDirectory, Path.GetFileNameWithoutExtension(fileName));
 
-                    File.WriteAllBytes(Path.Combine(Path.GetTempPath(), fileName), fileData);
-                    //나중에 하자 지금은 너무 힘듦 ㅅㄱ
-                    //기능 개발 : 파일 압축 해제하고 프로그램 실행 파일 자동 파악 및 자동 실행
+                    File.WriteAllBytes(filePath, fileData);
+
+                    using (var zip = ZipFile.Read(filePath))
+                    {
+                        zip.ExtractAll(dirPath);
+                    }
+
+                    BetterReeleasedWhenWorker(dirPath);
+                    MessageBox.Show("Better Reeleased!", "ReeleaseEx", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
 
                 Thread.Sleep(10);
             }
+        }
+
+        private void _comManager_ConnectionClosed(object sender, ConnectionEventArgs e)
+        {
+            _IPEPs.Remove(e.EndPoint);
         }
 
         public async Task SendAsync(string path)
@@ -95,8 +145,6 @@ namespace ReeleaseEx.BetterReelease
 
             await _comManager.SendAsync(buffer1, 0, buffer1.Length, _IPEPs);
             await _comManager.SendAsync(buffer2, 0, buffer2.Length, _IPEPs);
-
-            File.Delete(path);
         }
     }
 }
