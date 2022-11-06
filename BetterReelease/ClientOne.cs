@@ -82,13 +82,15 @@ namespace ReeleaseEx.BetterReelease
 
         private void _comManager_PeerConnected(object sender, PeerEventArgs e)
         {
+            IsConnected = true;
+            SyncWhenPeerConnected();
+
+            if (!_IPEPs.Contains(e.Peer.EndPoint)) _IPEPs.Add(e.Peer.EndPoint);
+
             Task.Run(async () =>
             {
                 string fileName = string.Empty;
                 byte[] fileData = new byte[0];
-
-                IsConnected = true;
-                SyncWhenPeerConnected();
 
                 using (var reader = new MessagePackStreamReader(e.Peer.Stream))
                 {
