@@ -55,18 +55,18 @@
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>bin\Debug\Newtonsoft.Json.dll</HintPath>
+      <HintPath>DLLs\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="Ookii.Dialogs.Wpf, Version=5.0.0.0, Culture=neutral, PublicKeyToken=66aa232afad40158, processorArchitecture=MSIL">
       <HintPath>packages\Ookii.Dialogs.Wpf.5.0.0\lib\net462\Ookii.Dialogs.Wpf.dll</HintPath>
     </Reference>
     <Reference Include="Open.P2P, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>bin\Debug\Open.P2P.dll</HintPath>
+      <HintPath>DLLs\Open.P2P.dll</HintPath>
     </Reference>
     <Reference Include="OPtion, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>bin\Debug\OPtion.dll</HintPath>
+      <HintPath>DLLs\OPtion.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
@@ -162,6 +162,11 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="gtav.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="DLLs\Newtonsoft.Json.dll" />
+    <Content Include="DLLs\Open.P2P.dll" />
+    <Content Include="DLLs\OPtion.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
