@@ -77,6 +77,13 @@ namespace ReeleaseEx
                     ConnectIp.Content = "Disconnect";
                 }));
             });
+            Client.SyncWhenConnectionClosed = new Action(() =>
+            {
+                Dispatcher.Invoke(new Action(() =>
+                {
+                    ConnectIp.Content = "Connect";
+                }));
+            });
             Client.BetterReeleasedWhenWorker = new Action<string>((dirPath) =>
             {
                 Dispatcher.Invoke(new Action(() =>
@@ -325,6 +332,7 @@ namespace ReeleaseEx
             else
             {
                 Client.Stop();
+                ConnectIp.Content = "Connect";
             }
         }
 

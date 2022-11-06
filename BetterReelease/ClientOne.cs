@@ -43,6 +43,7 @@ namespace ReeleaseEx.BetterReelease
         private List<IPEndPoint> _IPEPs = new List<IPEndPoint>();
 
         public Action SyncWhenPeerConnected { get; set; }
+        public Action SyncWhenConnectionClosed { get; set; }
         public Action<string> BetterReeleasedWhenWorker { get; set; }
 
         public ClientOne()
@@ -106,7 +107,6 @@ namespace ReeleaseEx.BetterReelease
 
             Task.Run(async () =>
             {
-                MessageBox.Show($"Hi {e.Peer.EndPoint}");
                 string fileName = string.Empty;
                 byte[] fileData = new byte[0];
 
@@ -153,6 +153,7 @@ namespace ReeleaseEx.BetterReelease
         private void _comManager_ConnectionClosed(object sender, ConnectionEventArgs e)
         {
             _IPEPs.Remove(e.EndPoint);
+            SyncWhenConnectionClosed();
         }
 
         public async Task SendAsync(string path)
