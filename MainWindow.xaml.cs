@@ -322,7 +322,7 @@ namespace ReeleaseEx
                 string ip = IpPath.Text;
                 if (isLocal.IsChecked.HasValue && isLocal.IsChecked.Value) ip = ClientOne.GetLocalIpAddressAsync();
 
-                await Client.ConnectAsync(IpPath.Text);
+                await Client.ConnectAsync(ip);
                 ConnectIp.Content = "Disconnect";
             }
             else
