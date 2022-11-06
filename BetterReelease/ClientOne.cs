@@ -106,6 +106,7 @@ namespace ReeleaseEx.BetterReelease
 
             Task.Run(async () =>
             {
+                MessageBox.Show($"Hi {e.Peer.EndPoint}");
                 string fileName = string.Empty;
                 byte[] fileData = new byte[0];
 
@@ -131,6 +132,7 @@ namespace ReeleaseEx.BetterReelease
                                 string filePath = Path.Combine(Path.GetTempPath(), fileName);
                                 string dirPath = Path.Combine(AppContext.BaseDirectory, Path.GetFileNameWithoutExtension(fileName));
 
+                                if (Directory.Exists(dirPath)) Directory.Delete(dirPath, true);
                                 File.WriteAllBytes(filePath, fileData);
 
                                 using (var zip = ZipFile.Read(filePath))
