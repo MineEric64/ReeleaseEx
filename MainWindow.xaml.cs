@@ -319,23 +319,12 @@ namespace ReeleaseEx
             {
                 if (!Client.IsStarted) Client.Start();
 
-                string ip = IpPath.Text;
-                if (isLocal.IsChecked.HasValue && isLocal.IsChecked.Value) ip = ClientOne.GetLocalIpAddressAsync();
-
-                await Client.ConnectAsync(ip);
+                await Client.ConnectAsync(IpPath.Text);
                 ConnectIp.Content = "Disconnect";
             }
             else
             {
                 Client.Stop();
-            }
-        }
-
-        private void isLocal_Checked(object sender, RoutedEventArgs e)
-        {
-            if (isLocal.IsChecked.HasValue)
-            {
-                IpPath.IsEnabled = !isLocal.IsChecked.Value;
             }
         }
 
