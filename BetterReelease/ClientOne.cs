@@ -49,7 +49,7 @@ namespace ReeleaseEx.BetterReelease
         public ClientOne()
         {
             _listener = new UdpListener(PORT_NUMBER);
-            _comManager = new CommunicationManager();
+            _comManager = new CommunicationManager(_listener);
             _comManager.PeerConnected += _comManager_PeerConnected;
             _comManager.ConnectionClosed += _comManager_ConnectionClosed;
         }
