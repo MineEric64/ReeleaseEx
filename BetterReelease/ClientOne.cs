@@ -48,8 +48,8 @@ namespace ReeleaseEx.BetterReelease
 
         public ClientOne()
         {
-            _listener = new TcpListener(PORT_NUMBER);
-            _comManager = new CommunicationManager(_listener);
+            //_listener = new TcpListener(PORT_NUMBER);
+            _comManager = new CommunicationManager();//_listener);
             _comManager.PeerConnected += _comManager_PeerConnected;
             _comManager.ConnectionClosed += _comManager_ConnectionClosed;
         }
@@ -84,7 +84,7 @@ namespace ReeleaseEx.BetterReelease
 
         public void Start()
         {
-            _listener.Start();
+            //_listener.Start();
             IsStarted = true;
         }
 
@@ -95,7 +95,7 @@ namespace ReeleaseEx.BetterReelease
             IsConnected = false;
             IsStarted = false;
 
-            _listener.Stop();
+            //_listener.Stop();
         }
 
         private void _comManager_PeerConnected(object sender, PeerEventArgs e)
