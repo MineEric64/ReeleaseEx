@@ -311,10 +311,8 @@ namespace ReeleaseEx
         {
             if (!Client.IsConnected)
             {
-                string[] raw = IpPath.Text.Split(':');
-
                 if (!Client.IsStarted) Client.Start();
-                await Client.ConnectAsync(raw[0], int.Parse(raw[1]));
+                await Client.ConnectAsync(IpPath.Text);
                 ConnectIp.Content = "Disconnect";
             }
             else

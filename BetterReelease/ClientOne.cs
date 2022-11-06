@@ -48,12 +48,12 @@ namespace ReeleaseEx.BetterReelease
             _comManager.ConnectionClosed += _comManager_ConnectionClosed;
         }
 
-        public async Task ConnectAsync(string ip, int port)
+        public async Task ConnectAsync(string ip)
         {
             IPAddress address;
             if (!IPAddress.TryParse(ip, out address)) address = (await Dns.GetHostAddressesAsync(ip))[0];
 
-            var IPEP = new IPEndPoint(address, port);
+            var IPEP = new IPEndPoint(address, PORT_NUMBER);
 
             _IPEPs.Add(IPEP);
 
