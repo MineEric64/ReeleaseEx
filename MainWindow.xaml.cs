@@ -229,7 +229,8 @@ namespace ReeleaseEx
             SelectedTool.ZipNameParams = ZipNameParam.Text;
 
             SaveOption();
-            path = Reelease();
+            path = await Task.Run(Reelease);
+
             if (Client.IsConnected)
             {
                 await BetterReeleaseAsync(path);
@@ -317,6 +318,10 @@ namespace ReeleaseEx
             if (!Client.IsConnected)
             {
                 if (!Client.IsStarted) Client.Start();
+
+                string ip = IpPath.Text;
+                if (isLocal.IsChecked.HasValue && isLocal.IsChecked.Value) ip = ClientOne.GetLocalIpAddressAsync();
+
                 await Client.ConnectAsync(IpPath.Text);
                 ConnectIp.Content = "Disconnect";
             }

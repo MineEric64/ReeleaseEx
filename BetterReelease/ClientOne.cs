@@ -1,11 +1,15 @@
 ﻿using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Threading;
 
 using Open.P2P;
 using Open.P2P.Listeners;
@@ -13,12 +17,12 @@ using Open.P2P.IO;
 using Open.P2P.EventArgs;
 using Open.P2P.Streams.Readers;
 
-using Path = System.IO.Path;
 using MessagePack;
+
 using Ionic.Zip;
-using System.Windows;
-using System.Windows.Threading;
-using System.Buffers;
+
+using Path = System.IO.Path;
+using TcpListener = Open.P2P.Listeners.TcpListener;
 
 namespace ReeleaseEx.BetterReelease
 {
@@ -47,6 +51,19 @@ namespace ReeleaseEx.BetterReelease
             _comManager = new CommunicationManager(_listener);
             _comManager.PeerConnected += _comManager_PeerConnected;
             _comManager.ConnectionClosed += _comManager_ConnectionClosed;
+        }
+
+        public static string GetLocalIpAddressAsync()
+        {
+            var host = Dns.GetHostEntry(Dns.GetHostName());
+            foreach (var ip in host.AddressList)
+            {
+                if (ip.AddressFamily == AddressFamily.InterNetwork)
+                {
+                    return ip.ToString();
+                }
+            }
+            throw new Exception("No network adapters with an IPv4 address in the system!");
         }
 
         public async Task ConnectAsync(string ip)
@@ -104,12 +121,9 @@ namespace ReeleaseEx.BetterReelease
                         {
                             var info = MessagePackSerializer.Deserialize<ReceiveInfo>(bufferPacked.Value);
 
-                            MessageBox.Show("OKYA"); //이 메시지가 송수신 둘다 보이지 않음
-
                             if (info.Step == 1) //File Name
                             {
                                 fileName = Encoding.UTF8.GetString(info.Buffer);
-                                MessageBox.Show(fileName);
                             }
                             else if (info.Step == 2) //File Data
                             {
