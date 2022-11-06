@@ -37,7 +37,6 @@ namespace ReeleaseEx.BetterReelease
         public bool IsStarted { get; private set; } = false;
         public bool IsConnected { get; private set; } = false;
 
-        private UdpListener _listener;
         private CommunicationManager _comManager;
 
         private List<IPEndPoint> _IPEPs = new List<IPEndPoint>();
@@ -48,8 +47,7 @@ namespace ReeleaseEx.BetterReelease
 
         public ClientOne()
         {
-            _listener = new UdpListener(PORT_NUMBER);
-            _comManager = new CommunicationManager(_listener);
+            _comManager = new CommunicationManager();
             _comManager.PeerConnected += _comManager_PeerConnected;
             _comManager.ConnectionClosed += _comManager_ConnectionClosed;
         }
@@ -84,7 +82,6 @@ namespace ReeleaseEx.BetterReelease
 
         public void Start()
         {
-            _listener.Start();
             IsStarted = true;
         }
 
@@ -94,8 +91,6 @@ namespace ReeleaseEx.BetterReelease
 
             IsConnected = false;
             IsStarted = false;
-
-            _listener.Stop();
         }
 
         private void _comManager_PeerConnected(object sender, PeerEventArgs e)
