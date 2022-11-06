@@ -42,9 +42,6 @@ namespace ReeleaseEx.BetterReelease
 
         public ClientOne()
         {
-            Random rand = new Random();
-            _port = rand.Next(9000, 10000);
-
             _listener = new TcpListener(PORT_NUMBER);
             _comManager = new CommunicationManager(_listener);
             _comManager.PeerConnected += _comManager_PeerConnected;

@@ -84,7 +84,6 @@ namespace ReeleaseEx
                 }));
             });
             Client.Start();
-            ConnectIp.Content = $"Connect ({Client.PORT_NUMBER})";
         }
 
         private void MainWindow_Closing(object sender, CancelEventArgs e)
@@ -321,7 +320,14 @@ namespace ReeleaseEx
             else
             {
                 Client.Stop();
-                ConnectIp.Content = $"Connect ({Client.PORT_NUMBER})";
+            }
+        }
+
+        private void isLocal_Checked(object sender, RoutedEventArgs e)
+        {
+            if (isLocal.IsChecked.HasValue)
+            {
+                IpPath.IsEnabled = !isLocal.IsChecked.Value;
             }
         }
     }
