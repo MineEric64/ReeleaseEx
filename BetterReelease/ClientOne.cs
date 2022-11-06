@@ -18,6 +18,7 @@ using MessagePack;
 using Ionic.Zip;
 using System.Windows;
 using System.Windows.Threading;
+using System.Buffers;
 
 namespace ReeleaseEx.BetterReelease
 {
@@ -79,49 +80,56 @@ namespace ReeleaseEx.BetterReelease
             _listener.Stop();
         }
 
-        private async void _comManager_PeerConnected(object sender, PeerEventArgs e)
+        private void _comManager_PeerConnected(object sender, PeerEventArgs e)
         {
-            var sr = new PascalStreamReader(e.Peer.Stream);
-
-            byte[] buffer;
-            ReceiveInfo info = ReceiveInfo.Empty;
-
-            string fileName = string.Empty;
-            byte[] fileData = new byte[0];
-
-            IsConnected = true;
-            SyncWhenPeerConnected();
-
-            while (IsConnected) //Background Worker
+            Task.Run(async () =>
             {
-                buffer = await sr.ReadBytesAsync(); //수신 입장에서 받지를 못함. 나중에 고쳐야할 듯 지금은 시간이 너무 늦기도 했고 멘탈 나감 ㅅㄱ
-                MessageBox.Show("OKYA"); //이 메시지가 송수신 둘다 보이지 않음
-                info = MessagePackSerializer.Deserialize<ReceiveInfo>(buffer);
+                string fileName = string.Empty;
+                byte[] fileData = new byte[0];
 
-                if (info.Step == 1) //File Name
+                IsConnected = true;
+                SyncWhenPeerConnected();
+
+                using (var reader = new MessagePackStreamReader(e.Peer.Stream))
                 {
-                    fileName = Encoding.UTF8.GetString(info.Buffer);
-                    MessageBox.Show(fileName);
-                }
-                else if (info.Step == 2) //File Data
-                {
-                    fileData = info.Buffer;
-                    string filePath = Path.Combine(Path.GetTempPath(), fileName);
-                    string dirPath = Path.Combine(AppContext.BaseDirectory, Path.GetFileNameWithoutExtension(fileName));
+                    CancellationToken token = new CancellationToken();
 
-                    File.WriteAllBytes(filePath, fileData);
-
-                    using (var zip = ZipFile.Read(filePath))
+                    while (IsConnected)
                     {
-                        zip.ExtractAll(dirPath);
+                        ReadOnlySequence<byte>? bufferPacked = await reader.ReadAsync(token);
+
+                        if (bufferPacked != null)
+                        {
+                            var info = MessagePackSerializer.Deserialize<ReceiveInfo>(bufferPacked.Value);
+
+                            MessageBox.Show("OKYA"); //이 메시지가 송수신 둘다 보이지 않음
+
+                            if (info.Step == 1) //File Name
+                            {
+                                fileName = Encoding.UTF8.GetString(info.Buffer);
+                                MessageBox.Show(fileName);
+                            }
+                            else if (info.Step == 2) //File Data
+                            {
+                                fileData = info.Buffer;
+                                string filePath = Path.Combine(Path.GetTempPath(), fileName);
+                                string dirPath = Path.Combine(AppContext.BaseDirectory, Path.GetFileNameWithoutExtension(fileName));
+
+                                File.WriteAllBytes(filePath, fileData);
+
+                                using (var zip = ZipFile.Read(filePath))
+                                {
+                                    zip.ExtractAll(dirPath);
+                                }
+
+                                BetterReeleasedWhenWorker(dirPath);
+                                MessageBox.Show("Better Reeleased!", "ReeleaseEx", MessageBoxButton.OK, MessageBoxImage.Information);
+                            }
+                        }
+                        Thread.Sleep(10);
                     }
-
-                    BetterReeleasedWhenWorker(dirPath);
-                    MessageBox.Show("Better Reeleased!", "ReeleaseEx", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
-
-                Thread.Sleep(10);
-            }
+            });
         }
 
         private void _comManager_ConnectionClosed(object sender, ConnectionEventArgs e)

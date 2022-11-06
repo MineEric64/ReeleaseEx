@@ -30,6 +30,7 @@ using syntaxERROR.OPtion;
 using ReeleaseEx.BetterReelease;
 
 using Path = System.IO.Path;
+using System.Security.Cryptography;
 
 namespace ReeleaseEx
 {
@@ -84,6 +85,11 @@ namespace ReeleaseEx
                 }));
             });
             Client.Start();
+        }
+
+        private void InitializeUI()
+        {
+            AddedList.SelectionMode = SelectionMode.Extended;
         }
 
         private void MainWindow_Closing(object sender, CancelEventArgs e)
@@ -184,12 +190,12 @@ namespace ReeleaseEx
 
         private void FileRemove_Click(object sender, RoutedEventArgs e)
         {
-            int index = AddedList.SelectedIndex;
-
-            if (index >= 0)
+            foreach (var item in AddedList.Items)
             {
-                AddedList.Items.RemoveAt(index);
-                SelectedTool.AddedFiles.RemoveAt(index);
+                string text = (string)item;
+
+                AddedList.Items.Remove(item);
+                SelectedTool.AddedFiles.Remove(text);
             }
         }
 
@@ -226,7 +232,6 @@ namespace ReeleaseEx
             path = Reelease();
             if (Client.IsConnected)
             {
-                MessageBox.Show("HMM");
                 await BetterReeleaseAsync(path);
             }
 
@@ -327,6 +332,11 @@ namespace ReeleaseEx
             {
                 IpPath.IsEnabled = !isLocal.IsChecked.Value;
             }
+        }
+
+        private void DirPath_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            SelectedTool.DirectoryPathFrom = DirPath.Text;
         }
     }
 }

@@ -16,7 +16,7 @@
             </Label.Foreground>
         </Label>
         <ComboBox x:Name="Items" HorizontalAlignment="Left" Margin="41,13,0,0" VerticalAlignment="Top" Width="251" SelectionChanged="Items_SelectionChanged"/>
-        <TextBox x:Name="DirPath" HorizontalAlignment="Left" Margin="138,50,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="393"/>
+        <TextBox x:Name="DirPath" HorizontalAlignment="Left" Margin="138,50,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="393" TextChanged="DirPath_TextChanged"/>
         <Label Content="Directory Path:" HorizontalAlignment="Left" Margin="41,46,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.453,0.505"/>
         <Label Content="Added:" HorizontalAlignment="Left" Margin="41,81,0,0" VerticalAlignment="Top"/>
         <Button x:Name="FileAdd" Content="Add File" HorizontalAlignment="Left" Margin="554,81,0,0" VerticalAlignment="Top" Height="56" Width="142" Click="FileAdd_Click"/>
@@ -35,7 +35,7 @@
         <Button x:Name="ItemAdd" Content="Add" HorizontalAlignment="Left" Margin="314,13,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.117,-0.431" Height="20" Width="65" Click="ItemAdd_Click"/>
         <Button x:Name="ItemRemove" Content="Remove" HorizontalAlignment="Left" Margin="400,13,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.117,-0.431" Height="20" Width="65" Click="ItemRemove_Click"/>
         <TextBox x:Name="IpPath" HorizontalAlignment="Left" Margin="501,13,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="132" Height="22"/>
-        <Button x:Name="ConnectIp" Content="Connect (0000)" HorizontalAlignment="Left" Margin="652,13,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.117,-0.431" Height="20" Width="99" Click="ConnectIp_Click"/>
+        <Button x:Name="ConnectIp" Content="Connect" HorizontalAlignment="Left" Margin="652,13,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.117,-0.431" Height="20" Width="99" Click="ConnectIp_Click"/>
         <CheckBox x:Name="isLocal" Content="Is Local" HorizontalAlignment="Left" Margin="691,43,0,0" VerticalAlignment="Top" Checked="isLocal_Checked"/>
 
     </Grid>
