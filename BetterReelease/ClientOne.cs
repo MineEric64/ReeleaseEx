@@ -89,7 +89,7 @@ namespace ReeleaseEx.BetterReelease
             _client.Start();
             Task.Run(() =>
             {
-                while (IsConnected)
+                while (true)
                 {
                     _client.PollEvents();
                     Thread.Sleep(10);
