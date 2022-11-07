@@ -15,6 +15,9 @@ namespace ReeleaseEx.BetterReelease
         public int Step { get; set; }
 
         [Key(1)]
+        public int MaxStep { get; set; }
+
+        [Key(2)]
         public byte[] Buffer { get; set; }
 
         /// <summary>
@@ -23,11 +26,12 @@ namespace ReeleaseEx.BetterReelease
         [IgnoreMember]
         internal static MessagePackSerializerOptions LZ4_OPTIONS => MessagePackSerializerOptions.Standard.WithCompression(MessagePackCompression.Lz4BlockArray);
         [IgnoreMember]
-        public static ReceiveInfo Empty => new ReceiveInfo(0, new byte[0]);
+        public static ReceiveInfo Empty => new ReceiveInfo(0, 0, new byte[0]);
 
-        public ReceiveInfo(int step, byte[] buffer)
+        public ReceiveInfo(int step, int maxStep, byte[] buffer)
         {
             Step = step;
+            MaxStep = maxStep;
             Buffer = buffer;
         }
     }

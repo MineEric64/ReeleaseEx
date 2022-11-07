@@ -37,7 +37,8 @@ namespace ReeleaseEx.BetterReelease
         public bool IsStarted { get; private set; } = false;
         public bool IsConnected { get; private set; } = false;
 
-        private CommunicationManager _comManager;
+        private UdpListener _listener;
+        private CommunicationUdpManager _comManager;
 
         private List<IPEndPoint> _IPEPs = new List<IPEndPoint>();
 
@@ -45,10 +46,15 @@ namespace ReeleaseEx.BetterReelease
         public Action SyncWhenConnectionClosed { get; set; }
         public Action<string> BetterReeleasedWhenWorker { get; set; }
 
+        string fileName = string.Empty;
+        List<byte> fileDataList = new List<byte>();
+
         public ClientOne()
         {
-            _comManager = new CommunicationManager();
-            _comManager.PeerConnected += _comManager_PeerConnected;
+            _listener = new UdpListener(PORT_NUMBER);
+            _comManager = new CommunicationUdpManager();
+            _comManager.PacketReceived += _comManager_PacketReceived;
+            //_comManager.PeerConnected += _comManager_PeerConnected;
             _comManager.ConnectionClosed += _comManager_ConnectionClosed;
         }
 
@@ -74,7 +80,7 @@ namespace ReeleaseEx.BetterReelease
 
             _IPEPs.Add(IPEP);
 
-            await _comManager.ConnectAsync(IPEP);
+            //await _comManager.ConnectAsync(IPEP);
             IsConnected = true;
 
             MessageBox.Show("Connected!", "ReeleaseEx", MessageBoxButton.OK, MessageBoxImage.Information);
@@ -82,6 +88,7 @@ namespace ReeleaseEx.BetterReelease
 
         public void Start()
         {
+            _listener.Start();
             IsStarted = true;
         }
 
@@ -89,11 +96,12 @@ namespace ReeleaseEx.BetterReelease
         {
             if (!IsConnected) return;
 
+            _listener.Stop();
             IsConnected = false;
             IsStarted = false;
         }
 
-        private void _comManager_PeerConnected(object sender, PeerEventArgs e)
+        private void _comManager_PeerConnected(object sender, PeerEventArgs e) //for TCP
         {
             IsConnected = true;
             SyncWhenPeerConnected();
@@ -145,6 +153,44 @@ namespace ReeleaseEx.BetterReelease
             });
         }
 
+        private void _comManager_PacketReceived(object sender, UdpPacketReceivedEventArgs e) //for UDP
+        {
+            if (!IsConnected)
+            {
+                IsConnected = true;
+                SyncWhenPeerConnected();
+                if (!_IPEPs.Contains(e.EndPoint)) _IPEPs.Add(e.EndPoint);
+            }
+
+            var info = MessagePackSerializer.Deserialize<ReceiveInfo>(e.Data);
+
+            if (info.Step == 1) //File Name
+            {
+                fileName = Encoding.UTF8.GetString(info.Buffer);
+            }
+            else if (info.Step >= 2) //File Data
+            {
+                fileDataList.AddRange(info.Buffer);
+
+                if (info.Step == info.MaxStep)
+                {
+                    string filePath = Path.Combine(Path.GetTempPath(), fileName);
+                    string dirPath = Path.Combine(AppContext.BaseDirectory, Path.GetFileNameWithoutExtension(fileName));
+
+                    if (Directory.Exists(dirPath)) Directory.Delete(dirPath, true);
+                    File.WriteAllBytes(filePath, fileDataList.ToArray());
+
+                    using (var zip = ZipFile.Read(filePath))
+                    {
+                        zip.ExtractAll(dirPath);
+                    }
+
+                    BetterReeleasedWhenWorker(dirPath);
+                    MessageBox.Show("Better Reeleased!", "ReeleaseEx", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+            }
+        }
+
         private void _comManager_ConnectionClosed(object sender, ConnectionEventArgs e)
         {
             _IPEPs.Remove(e.EndPoint);
@@ -156,14 +202,28 @@ namespace ReeleaseEx.BetterReelease
             string fileName = Path.GetFileName(path);
             byte[] fileData = File.ReadAllBytes(path);
 
-            var info1 = new ReceiveInfo(1, Encoding.UTF8.GetBytes(fileName));
-            var info2 = new ReceiveInfo(2, fileData);
-
+            var info1 = new ReceiveInfo(1, 1, Encoding.UTF8.GetBytes(fileName));
             byte[] buffer1 = MessagePackSerializer.Serialize(info1);
-            byte[] buffer2 = MessagePackSerializer.Serialize(info2);
 
             await _comManager.SendAsync(buffer1, 0, buffer1.Length, _IPEPs);
-            await _comManager.SendAsync(buffer2, 0, buffer2.Length, _IPEPs);
+
+            int read = 0;
+            int step = 1;
+            int maxStep = (int)Math.Ceiling((double)fileData.Length / 65507);
+
+            while (read < fileData.Length)
+            {
+                int bytesRead = read + 65507 < fileData.Length ? 65507 : fileData.Length - read;
+                byte[] buffer = new byte[bytesRead];
+                ReceiveInfo info2;
+
+                Buffer.BlockCopy(fileData, read, buffer, 0, read + bytesRead);
+                info2 = new ReceiveInfo(step++, maxStep, buffer);
+
+                await _comManager.SendAsync(buffer1, 0, buffer1.Length, _IPEPs);
+
+                read += bytesRead;
+            }
         }
     }
 }
