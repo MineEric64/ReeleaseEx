@@ -30,7 +30,6 @@ using syntaxERROR.OPtion;
 using ReeleaseEx.BetterReelease;
 
 using Path = System.IO.Path;
-using System.Security.Cryptography;
 
 namespace ReeleaseEx
 {
@@ -240,7 +239,7 @@ namespace ReeleaseEx
 
             if (Client.IsConnected)
             {
-                await BetterReeleaseAsync(path);
+                BetterReelease(path);
             }
 
             MessageBox.Show("Reeleased!", this.Title, MessageBoxButton.OK, MessageBoxImage.Information);
@@ -291,9 +290,9 @@ namespace ReeleaseEx
             return $"{path}.zip";
         }
 
-        public async Task BetterReeleaseAsync(string path)
+        public void BetterReelease(string path)
         {
-            await Client.SendAsync(path);
+            Client.Send(path);
             File.Delete(path);
         }
 
