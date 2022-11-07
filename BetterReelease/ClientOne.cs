@@ -54,6 +54,8 @@ namespace ReeleaseEx.BetterReelease
             _listener.ConnectionRequestEvent += _listener_ConnectionRequestEvent;
 
             _client = new NetManager(_listener);
+
+            Start();
         }
 
         public static string GetLocalIpAddressAsync()
@@ -181,7 +183,7 @@ namespace ReeleaseEx.BetterReelease
                 byte[] buffer = new byte[bytesRead];
                 ReceiveInfo info2;
 
-                Buffer.BlockCopy(fileData, read, buffer, 0, read + bytesRead);
+                Buffer.BlockCopy(fileData, read, buffer, 0, bytesRead);
                 info2 = new ReceiveInfo(step++, maxStep, buffer);
                 byte[] buffer2 = MessagePackSerializer.Serialize(info2);
 
