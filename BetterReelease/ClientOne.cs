@@ -179,8 +179,8 @@ namespace ReeleaseEx.BetterReelease
             }
 
             int read = 0;
-            int step = 1;
-            int maxStep = (int)Math.Ceiling((double)fileData.Length / 65507);
+            int step = 2;
+            int maxStep = (int)Math.Ceiling((double)fileData.Length / 65507) + 1;
 
             while (read < fileData.Length)
             {
