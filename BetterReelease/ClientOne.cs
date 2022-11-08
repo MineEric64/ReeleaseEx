@@ -135,6 +135,7 @@ namespace ReeleaseEx.BetterReelease
 
         private void _listener_NetworkReceiveEvent(NetPeer peer, NetPacketReader reader, byte channel, DeliveryMethod deliveryMethod)
         {
+            MessageBox.Show("Received");
             byte[] buffer = reader.GetBytesWithLength();
             var info = MessagePackSerializer.Deserialize<ReceiveInfo>(buffer);
 
@@ -168,38 +169,48 @@ namespace ReeleaseEx.BetterReelease
 
         public void Send(string path)
         {
-            string fileName = Path.GetFileName(path);
-            byte[] fileData = File.ReadAllBytes(path);
-
-            var info1 = new ReceiveInfo(1, 1, Encoding.UTF8.GetBytes(fileName));
+            var info1 = new ReceiveInfo(1, 1, Encoding.UTF8.GetBytes("asdf"));
             byte[] buffer1 = MessagePackSerializer.Serialize(info1);
 
             foreach (var peer in _IPEPs)
             {
                 peer.Send(buffer1, DeliveryMethod.ReliableUnordered);
             }
+            MessageBox.Show("Sent!");
+            return;
 
-            int read = 0;
-            int step = 1;
-            int maxStep = (int)Math.Ceiling((double)fileData.Length / 65507);
+            //string fileName = Path.GetFileName(path);
+            //byte[] fileData = File.ReadAllBytes(path);
 
-            while (read < fileData.Length)
-            {
-                int bytesRead = read + 65507 < fileData.Length ? 65507 : fileData.Length - read;
-                byte[] buffer = new byte[bytesRead];
-                ReceiveInfo info2;
+            //var info1 = new ReceiveInfo(1, 1, Encoding.UTF8.GetBytes(fileName));
+            //byte[] buffer1 = MessagePackSerializer.Serialize(info1);
 
-                Buffer.BlockCopy(fileData, read, buffer, 0, bytesRead);
-                info2 = new ReceiveInfo(step++, maxStep, buffer);
-                byte[] buffer2 = MessagePackSerializer.Serialize(info2);
+            //foreach (var peer in _IPEPs)
+            //{
+            //    peer.Send(buffer1, DeliveryMethod.ReliableUnordered);
+            //}
 
-                foreach (var peer in _IPEPs)
-                {
-                    peer.Send(buffer2, DeliveryMethod.ReliableUnordered);
-                }
+            //int read = 0;
+            //int step = 1;
+            //int maxStep = (int)Math.Ceiling((double)fileData.Length / 65507);
 
-                read += bytesRead;
-            }
+            //while (read < fileData.Length)
+            //{
+            //    int bytesRead = read + 65507 < fileData.Length ? 65507 : fileData.Length - read;
+            //    byte[] buffer = new byte[bytesRead];
+            //    ReceiveInfo info2;
+
+            //    Buffer.BlockCopy(fileData, read, buffer, 0, bytesRead);
+            //    info2 = new ReceiveInfo(step++, maxStep, buffer);
+            //    byte[] buffer2 = MessagePackSerializer.Serialize(info2);
+
+            //    foreach (var peer in _IPEPs)
+            //    {
+            //        peer.Send(buffer2, DeliveryMethod.ReliableUnordered);
+            //    }
+
+            //    read += bytesRead;
+            //}
         }
     }
 }
