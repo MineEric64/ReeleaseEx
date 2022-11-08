@@ -20,6 +20,7 @@ namespace ReeleaseEx
     public partial class LoadingWindow : Window
     {
         private int _progress = 0;
+        private int _max = 0;
         public bool IsShown { get; private set; } = false;
 
         public LoadingWindow()
@@ -36,11 +37,12 @@ namespace ReeleaseEx
                 loadingText.Content = text;
                 loadingPercentage.Text = "0%";
             });
+            _max = maximum;
         }
 
         public void Increment()
         {
-            if (_progress > loadingBar.Maximum)
+            if (_progress > _max)
             {
                 return;
             }
