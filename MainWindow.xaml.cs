@@ -255,6 +255,7 @@ namespace ReeleaseEx
             }
 
             MessageBox.Show("Reeleased!", this.Title, MessageBoxButton.OK, MessageBoxImage.Information);
+            if (Loading.IsShown) Loading.Hide();
         }
 
         public void LoadOption()

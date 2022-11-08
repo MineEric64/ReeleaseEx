@@ -137,6 +137,8 @@ namespace ReeleaseEx.BetterReelease
             ReadOnlyMemory<byte> buffer = new ReadOnlyMemory<byte>(reader.RawData, reader.Position, reader.RawDataSize - reader.Position);
             var info = MessagePackSerializer.Deserialize<ReceiveInfo>(buffer);
 
+            Debug.WriteLine($"{DateTime.Now} tlsqkf");
+
             if (!MainWindow.Loading.IsShown)
             {
                 MainWindow.Loading.Initialize(info.MaxStep);
@@ -181,6 +183,7 @@ namespace ReeleaseEx.BetterReelease
             int step = 2;
             int maxStep = (int)Math.Ceiling((double)fileData.Length / 65507) + 1;
 
+            if (!MainWindow.Loading.IsShown) MainWindow.Loading.Show();
             MainWindow.Loading.Initialize(maxStep, "Sending Reeleased Files...");
 
             var info1 = new ReceiveInfo(1, 1, Encoding.UTF8.GetBytes(fileName));
