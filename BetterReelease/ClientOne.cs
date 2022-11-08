@@ -181,6 +181,8 @@ namespace ReeleaseEx.BetterReelease
             int step = 2;
             int maxStep = (int)Math.Ceiling((double)fileData.Length / 65507) + 1;
 
+            MainWindow.Loading.Initialize(maxStep - 1, "Sending Reeleased Files...");
+
             while (read < fileData.Length)
             {
                 int bytesRead = read + 65507 < fileData.Length ? 65507 : fileData.Length - read;
@@ -197,6 +199,7 @@ namespace ReeleaseEx.BetterReelease
                 }
 
                 read += bytesRead;
+                MainWindow.Loading.Increment();
             }
         }
     }

@@ -111,8 +111,15 @@
     </ApplicationDefinition>
     <Compile Include="BetterReelease\ClientOne.cs" />
     <Compile Include="BetterReelease\ReceiveInfo.cs" />
+    <Compile Include="LoadingWindow.xaml.cs">
+      <DependentUpon>LoadingWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ToolConfig.cs" />
     <Page Include="ChooseText.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="LoadingWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

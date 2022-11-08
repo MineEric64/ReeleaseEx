@@ -45,10 +45,12 @@ namespace ReeleaseEx
         public static ToolConfig SelectedTool { get; private set; }
 
         public static ClientOne Client { get; private set; } = new ClientOne();
+        public static LoadingWindow Loading { get; private set; } = new LoadingWindow();
 
         public MainWindow()
         {
             InitializeComponent();
+            InitializeUI();
 
             this.Loaded += MainWindow_Loaded;
             this.Closing += MainWindow_Closing;
@@ -242,6 +244,8 @@ namespace ReeleaseEx
             SelectedTool.ZipNameParams = ZipNameParam.Text;
 
             SaveOption();
+
+            Loading.Show();
             path = await Task.Run(Reelease);
 
             if (Client.IsConnected)
@@ -250,6 +254,7 @@ namespace ReeleaseEx
             }
 
             MessageBox.Show("Reeleased!", this.Title, MessageBoxButton.OK, MessageBoxImage.Information);
+            Loading.Hide();
         }
 
         public void LoadOption()
@@ -280,6 +285,8 @@ namespace ReeleaseEx
 
             string path = Path.Combine(SelectedTool.DirectoryPathTo, name);
 
+            Loading.Initialize(SelectedTool.AddedFiles.Count, "Reeleasing...");
+
             using (var zip = new ZipFile())
             {
                 foreach (var fileName in SelectedTool.AddedFiles)
@@ -289,6 +296,8 @@ namespace ReeleaseEx
 
                     if (fileName.Contains(@"\")) directoryName = Directory.GetParent(filePath).FullName.Replace(SelectedTool.DirectoryPathFrom, "");
                     zip.AddFile(filePath, directoryName);
+
+                    Loading.Increment();
                 }
 
                 zip.Save($"{path}.zip");
