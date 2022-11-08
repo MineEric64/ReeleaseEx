@@ -109,9 +109,8 @@ namespace ReeleaseEx.BetterReelease
         {
             IsConnected = true;
             _IPEPs.Add(peer);
-            //SyncWhenPeerConnected();
-
-            peer.Send(Encoding.UTF8.GetBytes("hi peer!"), DeliveryMethod.ReliableOrdered);
+            SyncWhenPeerConnected();
+            MessageBox.Show($"Hi, {peer.EndPoint}");
         }
 
         private void _listener_PeerDisconnectedEvent(NetPeer peer, DisconnectInfo disconnectInfo)
@@ -138,9 +137,6 @@ namespace ReeleaseEx.BetterReelease
         {
             byte[] buffer = reader.GetBytesWithLength();
             var info = MessagePackSerializer.Deserialize<ReceiveInfo>(buffer);
-
-            MessageBox.Show(Encoding.UTF8.GetString(info.Buffer));
-            return;
 
             if (info.Step == 1) //File Name
             {
