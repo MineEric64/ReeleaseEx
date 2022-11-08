@@ -195,7 +195,7 @@ namespace ReeleaseEx.BetterReelease
 
             foreach (var peer in _IPEPs)
             {
-                peer.Send(buffer1, DeliveryMethod.ReliableUnordered);
+                peer.Send(buffer1, DeliveryMethod.ReliableOrdered);
             }
 
             while (read < fileData.Length)
@@ -210,7 +210,7 @@ namespace ReeleaseEx.BetterReelease
 
                 foreach (var peer in _IPEPs)
                 {
-                    peer.Send(buffer2, DeliveryMethod.ReliableUnordered);
+                    peer.Send(buffer2, DeliveryMethod.ReliableOrdered);
                 }
 
                 read += bytesRead;
