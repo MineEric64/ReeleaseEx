@@ -155,20 +155,27 @@ namespace ReeleaseEx.BetterReelease
 
                 if (info.Step == info.MaxStep)
                 {
-                    string filePath = Path.Combine(Path.GetTempPath(), fileName);
-                    string dirPath = Path.Combine(AppContext.BaseDirectory, Path.GetFileNameWithoutExtension(fileName));
-
-                    if (Directory.Exists(dirPath)) Directory.Delete(dirPath, true);
-                    File.WriteAllBytes(filePath, fileDataList.ToArray());
-
-                    using (var zip = ZipFile.Read(filePath))
+                    try
                     {
-                        zip.ExtractAll(dirPath);
-                    }
+                        string filePath = Path.Combine(Path.GetTempPath(), fileName);
+                        string dirPath = Path.Combine(AppContext.BaseDirectory, Path.GetFileNameWithoutExtension(fileName));
 
-                    BetterReeleasedWhenWorker(dirPath);
-                    MessageBox.Show("Better Reeleased!", "ReeleaseEx", MessageBoxButton.OK, MessageBoxImage.Information);
-                    MainWindow.Loading.Hide();
+                        if (Directory.Exists(dirPath)) Directory.Delete(dirPath, true);
+                        File.WriteAllBytes(filePath, fileDataList.ToArray());
+
+                        using (var zip = ZipFile.Read(filePath))
+                        {
+                            zip.ExtractAll(dirPath);
+                        }
+
+                        BetterReeleasedWhenWorker(dirPath);
+                        MessageBox.Show("Better Reeleased!", "ReeleaseEx", MessageBoxButton.OK, MessageBoxImage.Information);
+                        MainWindow.Loading.Hide();
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.ToString(), "BetterLiveScreen : Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
                 }
             }
             MainWindow.Loading.Increment();
