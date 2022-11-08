@@ -247,6 +247,7 @@ namespace ReeleaseEx
 
             Loading.Show();
             path = await Task.Run(Reelease);
+            Loading.Hide();
 
             if (Client.IsConnected)
             {
@@ -254,7 +255,6 @@ namespace ReeleaseEx
             }
 
             MessageBox.Show("Reeleased!", this.Title, MessageBoxButton.OK, MessageBoxImage.Information);
-            Loading.Hide();
         }
 
         public void LoadOption()
