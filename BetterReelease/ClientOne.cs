@@ -140,7 +140,6 @@ namespace ReeleaseEx.BetterReelease
             if (info.Step == 1) //File Name
             {
                 fileName = Encoding.UTF8.GetString(info.Buffer);
-                Debug.WriteLine($"Received File Name to : {fileName}");
             }
             else if (info.Step >= 2) //File Data
             {
