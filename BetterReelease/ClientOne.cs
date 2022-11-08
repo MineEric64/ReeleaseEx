@@ -135,7 +135,6 @@ namespace ReeleaseEx.BetterReelease
 
         private void _listener_NetworkReceiveEvent(NetPeer peer, NetPacketReader reader, byte channel, DeliveryMethod deliveryMethod)
         {
-            MessageBox.Show("Received");
             byte[] buffer = reader.GetBytesWithLength();
             var info = MessagePackSerializer.Deserialize<ReceiveInfo>(buffer);
 
@@ -178,7 +177,6 @@ namespace ReeleaseEx.BetterReelease
             {
                 peer.Send(buffer1, DeliveryMethod.ReliableUnordered);
             }
-            MessageBox.Show("Sent!");
             return;
 
             //string fileName = Path.GetFileName(path);
