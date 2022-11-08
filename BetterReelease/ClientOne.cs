@@ -19,6 +19,7 @@ using MessagePack;
 using Ionic.Zip;
 
 using Path = System.IO.Path;
+using System.Diagnostics;
 
 namespace ReeleaseEx.BetterReelease
 {
@@ -110,7 +111,6 @@ namespace ReeleaseEx.BetterReelease
             IsConnected = true;
             _IPEPs.Add(peer);
             SyncWhenPeerConnected();
-            MessageBox.Show($"Hi, {peer.EndPoint}");
         }
 
         private void _listener_PeerDisconnectedEvent(NetPeer peer, DisconnectInfo disconnectInfo)
@@ -118,7 +118,6 @@ namespace ReeleaseEx.BetterReelease
             IsConnected = false;
             _IPEPs.Remove(peer);
             SyncWhenConnectionClosed();
-            MessageBox.Show($"Bye, {peer.EndPoint}");
         }
 
         private void _listener_ConnectionRequestEvent(ConnectionRequest request)
@@ -137,6 +136,7 @@ namespace ReeleaseEx.BetterReelease
         {
             ReadOnlyMemory<byte> buffer = new ReadOnlyMemory<byte>(reader.RawData, reader.Position, reader.RawDataSize - reader.Position);
             var info = MessagePackSerializer.Deserialize<ReceiveInfo>(buffer);
+            Debug.WriteLine($"{DateTime.Now} : Received");
 
             if (info.Step == 1) //File Name
             {
