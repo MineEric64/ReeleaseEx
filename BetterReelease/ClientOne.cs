@@ -186,7 +186,7 @@ namespace ReeleaseEx.BetterReelease
             if (!MainWindow.Loading.IsShown) MainWindow.Loading.Show();
             MainWindow.Loading.Initialize(maxStep, "Sending Reeleased Files...");
 
-            var info1 = new ReceiveInfo(1, 1, Encoding.UTF8.GetBytes(fileName));
+            var info1 = new ReceiveInfo(1, maxStep, Encoding.UTF8.GetBytes(fileName));
             byte[] buffer1 = MessagePackSerializer.Serialize(info1);
 
             foreach (var peer in _IPEPs)

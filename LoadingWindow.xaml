@@ -8,7 +8,7 @@
         Title="Loading..." Height="140" Width="717">
     <Grid>
         <ProgressBar x:Name="loadingBar" HorizontalAlignment="Left" Height="34" Margin="22,18,0,0" VerticalAlignment="Top" Width="668"/>
-        <Label x:Name="loadingText" Content="Loading..." HorizontalAlignment="Left" Margin="308,62,0,0" VerticalAlignment="Top" FontSize="20"/>
+        <Label x:Name="loadingText" Content="Loading..." HorizontalAlignment="Center" Margin="0,52,0,0" VerticalAlignment="Top" FontSize="20"/>
         <TextBlock x:Name="loadingPercentage" HorizontalAlignment="Left" Margin="341,27,0,0" TextWrapping="Wrap" Text="100%" VerticalAlignment="Top"/>
 
     </Grid>

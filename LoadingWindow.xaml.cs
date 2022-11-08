@@ -55,7 +55,7 @@ namespace ReeleaseEx
             Dispatcher.Invoke(() =>
             {
                 loadingBar.Value = ++_progress;
-                loadingPercentage.Text = $"{(int)Math.Round(_progress / loadingBar.Maximum * 100)}%";
+                loadingPercentage.Text = $"{(int)Math.Round(_progress / (double)_max * 100)}%";
             });
         }
 
