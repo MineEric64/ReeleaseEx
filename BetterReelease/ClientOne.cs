@@ -76,7 +76,7 @@ namespace ReeleaseEx.BetterReelease
             IPAddress address;
             if (!IPAddress.TryParse(ip, out address)) address = (await Dns.GetHostAddressesAsync(ip))[0];
 
-            var IPEP = new IPEndPoint(IPAddress.Parse("127.0.0.1"), PORT_NUMBER);
+            var IPEP = new IPEndPoint(address, PORT_NUMBER);
 
             _client.Connect(IPEP, "reelease_ex");
             IsConnected = true;
@@ -86,7 +86,7 @@ namespace ReeleaseEx.BetterReelease
 
         public void Start()
         {
-            _client.Start();
+            _client.Start(PORT_NUMBER);
             Task.Run(() =>
             {
                 while (true)
