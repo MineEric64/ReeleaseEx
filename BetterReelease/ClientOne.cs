@@ -111,7 +111,8 @@ namespace ReeleaseEx.BetterReelease
         {
             IsConnected = true;
             _IPEPs.Add(peer);
-            SyncWhenPeerConnected();
+            //SyncWhenPeerConnected();
+            MessageBox.Show($"Hi, {peer.EndPoint}");
         }
 
         private void _listener_PeerDisconnectedEvent(NetPeer peer, DisconnectInfo disconnectInfo)
