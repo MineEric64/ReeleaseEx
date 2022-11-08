@@ -141,6 +141,7 @@ namespace ReeleaseEx.BetterReelease
             if (info.Step == 1) //File Name
             {
                 fileName = Encoding.UTF8.GetString(info.Buffer);
+                MessageBox.Show(fileName);
             }
             else if (info.Step >= 2) //File Data
             {
