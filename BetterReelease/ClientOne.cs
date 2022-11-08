@@ -76,7 +76,7 @@ namespace ReeleaseEx.BetterReelease
             IPAddress address;
             if (!IPAddress.TryParse(ip, out address)) address = (await Dns.GetHostAddressesAsync(ip))[0];
 
-            var IPEP = new IPEndPoint(address, PORT_NUMBER);
+            var IPEP = new IPEndPoint(IPAddress.Parse("localhost"), PORT_NUMBER);
 
             _client.Connect(IPEP, "reelease_ex");
             IsConnected = true;
@@ -109,7 +109,6 @@ namespace ReeleaseEx.BetterReelease
 
         private void _listener_PeerConnectedEvent(NetPeer peer)
         {
-            MessageBox.Show("Connected");
             IsConnected = true;
             _IPEPs.Add(peer);
             SyncWhenPeerConnected();
@@ -117,7 +116,6 @@ namespace ReeleaseEx.BetterReelease
 
         private void _listener_PeerDisconnectedEvent(NetPeer peer, DisconnectInfo disconnectInfo)
         {
-            MessageBox.Show("Disconnected");
             _IPEPs.Remove(peer);
             SyncWhenConnectionClosed();
         }
