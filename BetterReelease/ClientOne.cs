@@ -139,6 +139,8 @@ namespace ReeleaseEx.BetterReelease
             byte[] buffer = reader.GetBytesWithLength();
             var info = MessagePackSerializer.Deserialize<ReceiveInfo>(buffer);
 
+            MessageBox.Show("info deserialized");
+
             if (info.Step == 1) //File Name
             {
                 fileName = Encoding.UTF8.GetString(info.Buffer);
