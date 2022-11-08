@@ -135,7 +135,7 @@ namespace ReeleaseEx.BetterReelease
 
         private void _listener_NetworkReceiveEvent(NetPeer peer, NetPacketReader reader, byte channel, DeliveryMethod deliveryMethod)
         {
-            ReadOnlyMemory<byte> buffer = new ReadOnlyMemory<byte>(reader.RawData, reader.Position, reader.RawDataSize);
+            ReadOnlyMemory<byte> buffer = new ReadOnlyMemory<byte>(reader.RawData, reader.Position, reader.RawDataSize - reader.Position);
             var info = MessagePackSerializer.Deserialize<ReceiveInfo>(buffer);
 
             if (info.Step == 1) //File Name
