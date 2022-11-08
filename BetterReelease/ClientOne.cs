@@ -119,11 +119,14 @@ namespace ReeleaseEx.BetterReelease
         {
             _IPEPs.Remove(peer);
             SyncWhenConnectionClosed();
+            MessageBox.Show($"Bye, {peer.EndPoint}");
         }
 
         private void _listener_ConnectionRequestEvent(ConnectionRequest request)
         {
+            MessageBox.Show("requested");
             if (_client.ConnectedPeersCount < 4 /* max connections */)
+                MessageBox.Show("accpeted!");
                 request.AcceptIfKey("reelease_ex");
             else
                 request.Reject();
