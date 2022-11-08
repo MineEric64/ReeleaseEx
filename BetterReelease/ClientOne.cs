@@ -135,7 +135,7 @@ namespace ReeleaseEx.BetterReelease
 
         private void _listener_NetworkReceiveEvent(NetPeer peer, NetPacketReader reader, byte channel, DeliveryMethod deliveryMethod)
         {
-            byte[] buffer = reader.GetBytesWithLength();
+            ReadOnlyMemory<byte> buffer = new ReadOnlyMemory<byte>(reader.RawData, 0, reader.RawDataSize);
             var info = MessagePackSerializer.Deserialize<ReceiveInfo>(buffer);
 
             MessageBox.Show("info deserialized");
@@ -175,7 +175,7 @@ namespace ReeleaseEx.BetterReelease
 
             foreach (var peer in _IPEPs)
             {
-                peer.Send(buffer1, DeliveryMethod.ReliableUnordered);
+                peer.Send(buffer1, DeliveryMethod.ReliableOrdered);
             }
             return;
 
