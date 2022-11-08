@@ -136,11 +136,11 @@ namespace ReeleaseEx.BetterReelease
         {
             ReadOnlyMemory<byte> buffer = new ReadOnlyMemory<byte>(reader.RawData, reader.Position, reader.RawDataSize - reader.Position);
             var info = MessagePackSerializer.Deserialize<ReceiveInfo>(buffer);
-            Debug.WriteLine($"{DateTime.Now} : Received");
 
             if (info.Step == 1) //File Name
             {
                 fileName = Encoding.UTF8.GetString(info.Buffer);
+                Debug.WriteLine($"Received File Name to : {fileName}");
             }
             else if (info.Step >= 2) //File Data
             {
