@@ -30,6 +30,7 @@ using syntaxERROR.OPtion;
 using ReeleaseEx.BetterReelease;
 
 using Path = System.IO.Path;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace ReeleaseEx
 {
@@ -196,12 +197,18 @@ namespace ReeleaseEx
 
         private void FileRemove_Click(object sender, RoutedEventArgs e)
         {
-            foreach (var item in AddedList.Items)
+            var removedList = new List<string>();
+
+            foreach (var item in AddedList.SelectedItems)
             {
                 string text = (string)item;
+                removedList.Add(text);
+            }
 
+            foreach (var item in removedList)
+            {
                 AddedList.Items.Remove(item);
-                SelectedTool.AddedFiles.Remove(text);
+                SelectedTool.AddedFiles.Remove(item);
             }
         }
 
