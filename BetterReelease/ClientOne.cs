@@ -109,6 +109,7 @@ namespace ReeleaseEx.BetterReelease
 
         private void _listener_PeerConnectedEvent(NetPeer peer)
         {
+            MessageBox.Show("Connected");
             IsConnected = true;
             _IPEPs.Add(peer);
             SyncWhenPeerConnected();
@@ -116,6 +117,7 @@ namespace ReeleaseEx.BetterReelease
 
         private void _listener_PeerDisconnectedEvent(NetPeer peer, DisconnectInfo disconnectInfo)
         {
+            MessageBox.Show("Disconnected");
             _IPEPs.Remove(peer);
             SyncWhenConnectionClosed();
         }
