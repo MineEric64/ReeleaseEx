@@ -138,12 +138,9 @@ namespace ReeleaseEx.BetterReelease
             ReadOnlyMemory<byte> buffer = new ReadOnlyMemory<byte>(reader.RawData, reader.Position, reader.RawDataSize);
             var info = MessagePackSerializer.Deserialize<ReceiveInfo>(buffer);
 
-            MessageBox.Show("info deserialized");
-
             if (info.Step == 1) //File Name
             {
                 fileName = Encoding.UTF8.GetString(info.Buffer);
-                MessageBox.Show(fileName);
             }
             else if (info.Step >= 2) //File Data
             {
@@ -170,47 +167,38 @@ namespace ReeleaseEx.BetterReelease
 
         public void Send(string path)
         {
-            var info1 = new ReceiveInfo(1, 1, Encoding.UTF8.GetBytes("asdf"));
+            string fileName = Path.GetFileName(path);
+            byte[] fileData = File.ReadAllBytes(path);
+
+            var info1 = new ReceiveInfo(1, 1, Encoding.UTF8.GetBytes(fileName));
             byte[] buffer1 = MessagePackSerializer.Serialize(info1);
 
             foreach (var peer in _IPEPs)
             {
-                peer.Send(buffer1, DeliveryMethod.ReliableOrdered);
+                peer.Send(buffer1, DeliveryMethod.ReliableUnordered);
             }
-            return;
 
-            //string fileName = Path.GetFileName(path);
-            //byte[] fileData = File.ReadAllBytes(path);
+            int read = 0;
+            int step = 1;
+            int maxStep = (int)Math.Ceiling((double)fileData.Length / 65507);
 
-            //var info1 = new ReceiveInfo(1, 1, Encoding.UTF8.GetBytes(fileName));
-            //byte[] buffer1 = MessagePackSerializer.Serialize(info1);
+            while (read < fileData.Length)
+            {
+                int bytesRead = read + 65507 < fileData.Length ? 65507 : fileData.Length - read;
+                byte[] buffer = new byte[bytesRead];
+                ReceiveInfo info2;
 
-            //foreach (var peer in _IPEPs)
-            //{
-            //    peer.Send(buffer1, DeliveryMethod.ReliableUnordered);
-            //}
+                Buffer.BlockCopy(fileData, read, buffer, 0, bytesRead);
+                info2 = new ReceiveInfo(step++, maxStep, buffer);
+                byte[] buffer2 = MessagePackSerializer.Serialize(info2);
 
-            //int read = 0;
-            //int step = 1;
-            //int maxStep = (int)Math.Ceiling((double)fileData.Length / 65507);
+                foreach (var peer in _IPEPs)
+                {
+                    peer.Send(buffer2, DeliveryMethod.ReliableUnordered);
+                }
 
-            //while (read < fileData.Length)
-            //{
-            //    int bytesRead = read + 65507 < fileData.Length ? 65507 : fileData.Length - read;
-            //    byte[] buffer = new byte[bytesRead];
-            //    ReceiveInfo info2;
-
-            //    Buffer.BlockCopy(fileData, read, buffer, 0, bytesRead);
-            //    info2 = new ReceiveInfo(step++, maxStep, buffer);
-            //    byte[] buffer2 = MessagePackSerializer.Serialize(info2);
-
-            //    foreach (var peer in _IPEPs)
-            //    {
-            //        peer.Send(buffer2, DeliveryMethod.ReliableUnordered);
-            //    }
-
-            //    read += bytesRead;
-            //}
+                read += bytesRead;
+            }
         }
     }
 }
