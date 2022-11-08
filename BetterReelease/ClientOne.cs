@@ -126,10 +126,14 @@ namespace ReeleaseEx.BetterReelease
         {
             MessageBox.Show("requested");
             if (_client.ConnectedPeersCount < 4 /* max connections */)
+            {
                 MessageBox.Show("accpeted!");
                 request.AcceptIfKey("reelease_ex");
+            }
             else
+            {
                 request.Reject();
+            }
         }
 
         private void _listener_NetworkReceiveEvent(NetPeer peer, NetPacketReader reader, byte channel, DeliveryMethod deliveryMethod)
