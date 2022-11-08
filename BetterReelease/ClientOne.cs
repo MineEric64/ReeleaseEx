@@ -136,7 +136,7 @@ namespace ReeleaseEx.BetterReelease
         private void _listener_NetworkReceiveEvent(NetPeer peer, NetPacketReader reader, byte channel, DeliveryMethod deliveryMethod)
         {
             MessageBox.Show("Received");
-            byte[] buffer = reader.RawData;
+            byte[] buffer = reader.GetBytesWithLength();
             var info = MessagePackSerializer.Deserialize<ReceiveInfo>(buffer);
 
             MessageBox.Show("info deserialized");
