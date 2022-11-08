@@ -128,7 +128,7 @@ namespace ReeleaseEx.BetterReelease
             if (_client.ConnectedPeersCount < 4 /* max connections */)
             {
                 MessageBox.Show("accpeted!");
-                request.AcceptIfKey("reelease_ex");
+                request.Accept();
             }
             else
             {
