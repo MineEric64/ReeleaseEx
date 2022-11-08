@@ -183,9 +183,6 @@ namespace ReeleaseEx.BetterReelease
             int step = 2;
             int maxStep = (int)Math.Ceiling((double)fileData.Length / 65507) + 1;
 
-            if (!MainWindow.Loading.IsShown) MainWindow.Loading.Show();
-            MainWindow.Loading.Initialize(maxStep, "Sending Reeleased Files...");
-
             var info1 = new ReceiveInfo(1, maxStep, Encoding.UTF8.GetBytes(fileName));
             byte[] buffer1 = MessagePackSerializer.Serialize(info1);
 
@@ -193,7 +190,6 @@ namespace ReeleaseEx.BetterReelease
             {
                 peer.Send(buffer1, DeliveryMethod.ReliableUnordered);
             }
-            MainWindow.Loading.Increment();
 
             while (read < fileData.Length)
             {
@@ -211,7 +207,6 @@ namespace ReeleaseEx.BetterReelease
                 }
 
                 read += bytesRead;
-                MainWindow.Loading.Increment();
             }
         }
     }

@@ -245,17 +245,15 @@ namespace ReeleaseEx
 
             SaveOption();
 
-            Loading.Show();
             path = await Task.Run(Reelease);
-            Loading.Hide();
 
             if (Client.IsConnected)
             {
                 BetterReelease(path);
+                if (Loading.IsShown) Loading.Hide();
             }
 
             MessageBox.Show("Reeleased!", this.Title, MessageBoxButton.OK, MessageBoxImage.Information);
-            if (Loading.IsShown) Loading.Hide();
         }
 
         public void LoadOption()
