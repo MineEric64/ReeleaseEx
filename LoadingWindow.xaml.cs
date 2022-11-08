@@ -61,13 +61,13 @@ namespace ReeleaseEx
 
         public new void Show()
         {
-            base.Show();
+            Dispatcher.Invoke(base.Show);
             IsShown = true;
         }
 
         public new void Hide()
         {
-            base.Hide();
+            Dispatcher.Invoke(base.Hide);
             IsShown = false;
         }
     }

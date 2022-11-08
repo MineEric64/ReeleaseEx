@@ -30,7 +30,6 @@ using syntaxERROR.OPtion;
 using ReeleaseEx.BetterReelease;
 
 using Path = System.IO.Path;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace ReeleaseEx
 {
@@ -104,6 +103,7 @@ namespace ReeleaseEx
         private void MainWindow_Closing(object sender, CancelEventArgs e)
         {
             Client.Stop();
+            Application.Current.Shutdown();
         }
 
         private void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
