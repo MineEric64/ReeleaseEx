@@ -54,8 +54,6 @@ namespace ReeleaseEx.BetterReelease
             _listener.ConnectionRequestEvent += _listener_ConnectionRequestEvent;
 
             _client = new NetManager(_listener);
-
-            Start();
         }
 
         public static string GetLocalIpAddressAsync()
@@ -118,6 +116,7 @@ namespace ReeleaseEx.BetterReelease
 
         private void _listener_PeerDisconnectedEvent(NetPeer peer, DisconnectInfo disconnectInfo)
         {
+            IsConnected = false;
             _IPEPs.Remove(peer);
             SyncWhenConnectionClosed();
             MessageBox.Show($"Bye, {peer.EndPoint}");
@@ -125,11 +124,9 @@ namespace ReeleaseEx.BetterReelease
 
         private void _listener_ConnectionRequestEvent(ConnectionRequest request)
         {
-            MessageBox.Show("requested");
             if (_client.ConnectedPeersCount < 4 /* max connections */)
             {
-                MessageBox.Show("accpeted!");
-                request.Accept();
+                request.AcceptIfKey("reelease_ex");
             }
             else
             {
