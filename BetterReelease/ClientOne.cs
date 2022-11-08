@@ -137,6 +137,12 @@ namespace ReeleaseEx.BetterReelease
             ReadOnlyMemory<byte> buffer = new ReadOnlyMemory<byte>(reader.RawData, reader.Position, reader.RawDataSize - reader.Position);
             var info = MessagePackSerializer.Deserialize<ReceiveInfo>(buffer);
 
+            if (!MainWindow.Loading.IsShown)
+            {
+                MainWindow.Loading.Initialize(info.MaxStep);
+                MainWindow.Loading.Show();
+            }
+
             if (info.Step == 1) //File Name
             {
                 fileName = Encoding.UTF8.GetString(info.Buffer);
@@ -160,14 +166,22 @@ namespace ReeleaseEx.BetterReelease
 
                     BetterReeleasedWhenWorker(dirPath);
                     MessageBox.Show("Better Reeleased!", "ReeleaseEx", MessageBoxButton.OK, MessageBoxImage.Information);
+                    MainWindow.Loading.Hide();
                 }
             }
+            MainWindow.Loading.Increment();
         }
 
         public void Send(string path)
         {
             string fileName = Path.GetFileName(path);
             byte[] fileData = File.ReadAllBytes(path);
+
+            int read = 0;
+            int step = 2;
+            int maxStep = (int)Math.Ceiling((double)fileData.Length / 65507) + 1;
+
+            MainWindow.Loading.Initialize(maxStep, "Sending Reeleased Files...");
 
             var info1 = new ReceiveInfo(1, 1, Encoding.UTF8.GetBytes(fileName));
             byte[] buffer1 = MessagePackSerializer.Serialize(info1);
@@ -176,12 +190,7 @@ namespace ReeleaseEx.BetterReelease
             {
                 peer.Send(buffer1, DeliveryMethod.ReliableUnordered);
             }
-
-            int read = 0;
-            int step = 2;
-            int maxStep = (int)Math.Ceiling((double)fileData.Length / 65507) + 1;
-
-            MainWindow.Loading.Initialize(maxStep - 1, "Sending Reeleased Files...");
+            MainWindow.Loading.Increment();
 
             while (read < fileData.Length)
             {
